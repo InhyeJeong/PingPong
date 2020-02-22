@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Move Ball</title>
+</head>
+<body>
+
+<canvas id="myCanvas" width="480" height="320"></canvas>
+
+<script>
+  let canvas = document.getElementById("myCanvas");
+  let context = canvas.getContext("2d");
+
+  let x = canvas.width / 2;
+  let y = canvas.height - 30;
+  //  한 프레임당 움직이려는 거리
+  const dx = 2;
+  const dy = -2;
+
+  function draw () {
+    let leftUpX = 0
+    let leftUpY = 0
+    let rightDownX = canvas.width
+    let rightDownY = canvas.height
+
+    context.clearRect(leftUpX, leftUpY, rightDownX, rightDownY); //  remove past ball
+    drawBall()
+    x += dx;
+    y += dy;
+  }
+  
+  function drawBall () {
+    context.beginPath();
+    const radius = 10
+    const firstAngle = 0
+    const lastAngle = Math.PI*2
+    const isCounterClockwise = false
+
+    context.arc(x, y, radius, firstAngle, lastAngle, isCounterClockwise);
+    context.fillStyle = "#0095DD";
+    context.fill();
+    context.closePath();
+  }
+
+  setInterval(draw, 10);
+</script>
+
+<style>
+  * { padding: 0; margin: 0; }
+  canvas { background: #eee; display: block; margin: 0 auto; }
+</style>
+
+</body>
+</html>

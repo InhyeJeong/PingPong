@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Gamedev Canvas Workshop</title>
+</head>
+<body>
+
+<canvas id="myCanvas" width="480" height="320"></canvas>
+
+<script>
+  let canvas = document.getElementById("myCanvas");
+  let context = canvas.getContext("2d");
+
+  function drawSquare () {
+    const x = 20
+    const y = 40
+    const width = 50
+    const height = 50
+
+    context.beginPath()
+    context.rect(x, y, width, height)
+    context.fillStyle = "#FF0000"
+    context.fill()
+    context.closePath()
+  }
+
+  function drawCircle () {
+    context.beginPath();
+    const x = 240
+    const y = 160
+    const radius = 20
+    const firstAngle = 0
+    const lastAngle = Math.PI*2
+    const isCounterClockwise = false
+
+    context.arc(x, y, radius, firstAngle, lastAngle, isCounterClockwise);
+    context.fillStyle = "green";
+    context.fill();
+    context.closePath();
+  }
+
+  function drawBlueBorderBox () {
+    context.beginPath();
+    context.rect(160, 10, 100, 40);
+    context.strokeStyle = "rgba(0, 0, 255, 0.5)";
+    context.stroke(); //  draw border
+    context.closePath();
+  }
+
+  drawSquare()
+  drawCircle()
+  drawBlueBorderBox()
+</script>
+
+<style>
+  * { padding: 0; margin: 0; }
+  canvas { background: #eee; display: block; margin: 0 auto; }
+</style>
+
+</body>
+</html>
