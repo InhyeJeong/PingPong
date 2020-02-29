@@ -21,4 +21,15 @@ const KEY = {
   RIGHT: 39,
 }
 
-module.exports = { CANVAS, BALL, PADDLE, KEY }
+const BRICK = {
+  ROW: 3,
+  COLUMN: 5,
+  WIDTH: 75,
+  HEIGHT: 20,
+  PADDING: 10,
+  OFFSET_TOP: 30,
+  OFFSET_LEFT: 30,
+}
+
+
+module.exports = { CANVAS, BALL, PADDLE, KEY, BRICK }

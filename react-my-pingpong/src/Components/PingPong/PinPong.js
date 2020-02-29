@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { CANVAS, BALL, PADDLE, KEY } from '../../constants/const'
+import { CANVAS, BALL, PADDLE, KEY, BRICK } from '../../constants/const'
 
 class PingPong extends Component {
   constructor (props) {
@@ -12,6 +12,7 @@ class PingPong extends Component {
       dx: BALL.DIFFERENTIAL_X,
       dy: BALL.DIFFERENTIAL_Y,
       paddleX: (CANVAS.WIDTH - PADDLE.WIDTH) / 2,
+      bricks: [],
       rightPressed: false,
       leftPressed: false,
     }
@@ -25,6 +26,7 @@ class PingPong extends Component {
     })
     document.addEventListener("keydown", (e) => this.keyDownHandler(e), false);
     document.addEventListener("keyup", (e) => this.keyUpHandler(e), false);
+    this.initBrickPosition()
   }
 
   updateContext () {
@@ -127,6 +129,44 @@ class PingPong extends Component {
     context.fillStyle = "#383F96";
     context.fill();
     context.closePath();
+    this.drawBricks()
+  }
+
+  initBrickPosition () {
+    for (let column = 0; column < BRICK.COLUMN; column++) {
+      let tmpBricks = this.state.bricks
+      tmpBricks[column] = []
+      this.setState({
+        bricks: [...this.state.bricks, tmpBricks]
+      })
+      for (let row = 0; row < BRICK.ROW; row++) {
+        tmpBricks[column][row] = { x: 0, y: 0 }
+        this.setState({
+          bricks: [...this.state.bricks, tmpBricks],
+        })
+      }
+    }
+  }
+
+  drawBricks () {
+    let { context, bricks } = this.state
+    let tmpBricks = bricks
+    for(let column = 0; column < BRICK.COLUMN; column++) {
+      for(let row = 0; row < BRICK.ROW; row++) {
+        let BRICK_X = (column * (BRICK.WIDTH + BRICK.PADDING)) + BRICK.OFFSET_LEFT;
+        let BRICK_Y = (row * (BRICK.HEIGHT + BRICK.PADDING)) + BRICK.OFFSET_TOP;
+        tmpBricks[column][row].x = BRICK_X;
+        tmpBricks[column][row].y = BRICK_Y;
+        this.setState({
+          bricks: [...bricks, tmpBricks]
+        })
+        context.beginPath();
+        context.rect(BRICK_X, BRICK_Y, BRICK.WIDTH, BRICK.HEIGHT);
+        context.fillStyle = "#0095DD";
+        context.fill();
+        context.closePath();
+      }
+  }
   }
 
   keyDownHandler (e) {
