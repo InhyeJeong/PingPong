@@ -5,6 +5,7 @@ class PingPong extends Component {
   constructor (props) {
     super(props)
     this.state = {
+      animationRequest: () => {},
       canvas: '',
       context: '',
       x: BALL.X,
@@ -13,6 +14,7 @@ class PingPong extends Component {
       dy: BALL.DIFFERENTIAL_Y,
       paddleX: (CANVAS.WIDTH - PADDLE.WIDTH) / 2,
       bricks: [],
+      score: 0,
       rightPressed: false,
       leftPressed: false,
     }
@@ -38,15 +40,17 @@ class PingPong extends Component {
   }
 
   drawGame () {
-    let animationRequest = requestAnimationFrame(() => this.drawGame());
-    this.drawBall(animationRequest)
+    this.setState({
+      animationRequest: requestAnimationFrame(() => this.drawGame())
+    })
+    this.drawBall()
     this.drawPaddle()
     this.movePaddle()
   }
 
   //  코너 케이스에 주의 : nowYPosition + ballRadius = canvas.height인 경우
-  checkCollision (animationRequest) {
-    let { x, y, dx, dy, canvas, paddleX } = this.state
+  checkCollision () {
+    let { x, y, dx, dy, canvas, paddleX, animationRequest } = this.state
     //  충돌검사는 <현재 위치>에서 수행한다.
     let nowYPosition = y + dy
     let nowXPosition = x + dx
@@ -98,7 +102,7 @@ class PingPong extends Component {
     }
   }
   
-  drawBall (animationRequest) {
+  drawBall () {
     let { context, x, y } = this.state
     this.removePastBall()
     context.beginPath();
@@ -109,7 +113,7 @@ class PingPong extends Component {
     context.arc(x, y, BALL.RADIUS, firstAngle, lastAngle, isCounterClockwise);
     context.fillStyle = "#0095DD";
     context.fill();
-    this.checkCollision(animationRequest)
+    this.checkCollision()
     context.closePath();
   }
   
@@ -131,6 +135,7 @@ class PingPong extends Component {
     context.closePath();
     this.drawBricks()
     this.detectBrickCollision()
+    this.drawScore()
   }
 
   initBrickPosition () {
@@ -177,7 +182,7 @@ class PingPong extends Component {
   }
 
   detectBrickCollision () {
-    let { x, y, dy, bricks } = this.state
+    let { x, y, dy, bricks, score, animationRequest } = this.state
 
     for (let column = 0; column < BRICK.COLUMN; column++) {
       for (let row = 0; row < BRICK.ROW; row++) {
@@ -190,12 +195,26 @@ class PingPong extends Component {
             dy = -dy
             currentBrick.status = BRICK.STATUS.DEACTIVATE
             this.setState({
-              bricks: [...this.state.bricks, currentBrick]
+              bricks: [...bricks, currentBrick],
+              score: ++score,
             })
+            if (score === BRICK.ROW * BRICK.COLUMN) {
+              alert(`YOU WIN, CONGRATULATIONS! YOUR SCORE IS ${score} !!`);
+              document.location.reload();
+              cancelAnimationFrame(animationRequest)
+            }
           }
         }
       }
     }
+  }
+
+  drawScore () {
+    let { context, score } = this.state
+
+    context.font = "16px Arial";
+    context.fillStyle = "#0095DD";
+    context.fillText(`Score: ${score}`, 8, 20)
   }
 
   keyDownHandler (e) {
