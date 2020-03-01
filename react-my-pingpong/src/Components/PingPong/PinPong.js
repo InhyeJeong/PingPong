@@ -15,6 +15,7 @@ class PingPong extends Component {
       paddleX: (CANVAS.WIDTH - PADDLE.WIDTH) / 2,
       bricks: [],
       score: 0,
+      lives: 3,
       rightPressed: false,
       leftPressed: false,
     }
@@ -51,7 +52,7 @@ class PingPong extends Component {
 
   //  코너 케이스에 주의 : nowYPosition + ballRadius = canvas.height인 경우
   checkCollision () {
-    let { x, y, dx, dy, canvas, paddleX, animationRequest } = this.state
+    let { x, y, dx, dy, canvas, paddleX } = this.state
     //  충돌검사는 <현재 위치>에서 수행한다.
     let nowYPosition = y + dy
     let nowXPosition = x + dx
@@ -71,9 +72,7 @@ class PingPong extends Component {
       nowYPosition = y + dy
     } else if (nowYPosition + BALL.RADIUS > canvas.height) {
       //   바닥 충돌 검사
-      alert('GameOver')
-      cancelAnimationFrame(animationRequest)
-      document.location.reload();
+      this.updateLives()
     }
   
     if (nowXPosition + BALL.RADIUS > canvas.width || nowXPosition - BALL.RADIUS < 0) {
@@ -87,6 +86,27 @@ class PingPong extends Component {
       x: nowXPosition,
       y: nowYPosition,
     })
+  }
+
+  updateLives () {
+    let { lives, animationRequest } = this.state
+
+    this.setState({
+      lives: --lives,
+    })
+    if (!lives) {
+      alert('GameOver')
+      cancelAnimationFrame(animationRequest)
+      document.location.reload()
+    } else {
+      this.setState({
+        x: CANVAS.WIDTH / 2,
+        y: CANVAS.HEIGHT - 30,
+        dx: 2,
+        dy: -2,
+        paddleX: (CANVAS.WIDTH - PADDLE.WIDTH) / 2,
+      })
+    }
   }
 
   movePaddle () {
@@ -112,7 +132,7 @@ class PingPong extends Component {
     const isCounterClockwise = false
   
     context.arc(x, y, BALL.RADIUS, firstAngle, lastAngle, isCounterClockwise);
-    context.fillStyle = "#0095DD";
+    context.fillStyle = "#FF0000";
     context.fill();
     this.checkCollision()
     context.closePath();
@@ -131,12 +151,13 @@ class PingPong extends Component {
     let { canvas, context, paddleX } = this.state
     context.beginPath();
     context.rect(paddleX, canvas.height - PADDLE.HEIGHT, PADDLE.WIDTH, PADDLE.HEIGHT);
-    context.fillStyle = "#383F96";
+    context.fillStyle = "#D1AA32";
     context.fill();
     context.closePath();
     this.drawBricks()
     this.detectBrickCollision()
     this.drawScore()
+    this.drawLives()
   }
 
   initBrickPosition () {
@@ -174,7 +195,7 @@ class PingPong extends Component {
           })
           context.beginPath();
           context.rect(BRICK_X, BRICK_Y, BRICK.WIDTH, BRICK.HEIGHT);
-          context.fillStyle = "#0095DD";
+          context.fillStyle = "#B5482F";
           context.fill();
           context.closePath();
         }
@@ -214,8 +235,31 @@ class PingPong extends Component {
     let { context } = this.state
 
     context.font = "16px Arial";
-    context.fillStyle = "#0095DD";
-    context.fillText(`Score: ${this.state.score}`, 8, 20)
+    context.fillStyle = "#000000";
+    context.fillText(`🎯: ${this.state.score}`, 8, 20)
+  }
+
+  drawLives () {
+    let { context } = this.state
+
+    context.font = "16px Arial";
+    context.fillStyle = "#000000";
+    let liveEmoji = '🎖🎖🎖'
+    switch (this.state.lives) {
+      case 2:
+        liveEmoji = '🎖🎖'
+        break;
+      case 1:
+        liveEmoji = '🎖'
+        break;
+      case 0:
+        liveEmoji = '😖'
+        break;
+      default:
+        liveEmoji = '🎖🎖🎖'
+        break;
+    }
+    context.fillText(`Lives: ${liveEmoji}`, CANVAS.WIDTH - 110, 20)
   }
 
   keyDownHandler (e) {
