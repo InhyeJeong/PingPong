@@ -29,6 +29,10 @@ const BRICK = {
   PADDING: 10,
   OFFSET_TOP: 30,
   OFFSET_LEFT: 30,
+  STATUS: {
+    ACTIVATE: 1,
+    DEACTIVATE: 0,
+  }
 }
 
 

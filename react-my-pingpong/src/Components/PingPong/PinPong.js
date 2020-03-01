@@ -130,19 +130,24 @@ class PingPong extends Component {
     context.fill();
     context.closePath();
     this.drawBricks()
+    this.detectBrickCollision()
   }
 
   initBrickPosition () {
     for (let column = 0; column < BRICK.COLUMN; column++) {
-      let tmpBricks = this.state.bricks
-      tmpBricks[column] = []
+      let currentBricks = this.state.bricks
+      currentBricks[column] = []
       this.setState({
-        bricks: [...this.state.bricks, tmpBricks]
+        bricks: [...this.state.bricks, currentBricks]
       })
       for (let row = 0; row < BRICK.ROW; row++) {
-        tmpBricks[column][row] = { x: 0, y: 0 }
+        currentBricks[column][row] = {
+          x: 0,
+          y: 0,
+          status: BRICK.STATUS.ACTIVATE,
+        }
         this.setState({
-          bricks: [...this.state.bricks, tmpBricks],
+          bricks: [...this.state.bricks, currentBricks],
         })
       }
     }
@@ -150,23 +155,47 @@ class PingPong extends Component {
 
   drawBricks () {
     let { context, bricks } = this.state
-    let tmpBricks = bricks
+    let currentBricks = bricks
     for(let column = 0; column < BRICK.COLUMN; column++) {
       for(let row = 0; row < BRICK.ROW; row++) {
-        let BRICK_X = (column * (BRICK.WIDTH + BRICK.PADDING)) + BRICK.OFFSET_LEFT;
-        let BRICK_Y = (row * (BRICK.HEIGHT + BRICK.PADDING)) + BRICK.OFFSET_TOP;
-        tmpBricks[column][row].x = BRICK_X;
-        tmpBricks[column][row].y = BRICK_Y;
-        this.setState({
-          bricks: [...bricks, tmpBricks]
-        })
-        context.beginPath();
-        context.rect(BRICK_X, BRICK_Y, BRICK.WIDTH, BRICK.HEIGHT);
-        context.fillStyle = "#0095DD";
-        context.fill();
-        context.closePath();
+        if (currentBricks[column][row].status === BRICK.STATUS.ACTIVATE) {
+          let BRICK_X = (column * (BRICK.WIDTH + BRICK.PADDING)) + BRICK.OFFSET_LEFT;
+          let BRICK_Y = (row * (BRICK.HEIGHT + BRICK.PADDING)) + BRICK.OFFSET_TOP;
+          currentBricks[column][row].x = BRICK_X;
+          currentBricks[column][row].y = BRICK_Y;
+          this.setState({
+            bricks: [...bricks, currentBricks]
+          })
+          context.beginPath();
+          context.rect(BRICK_X, BRICK_Y, BRICK.WIDTH, BRICK.HEIGHT);
+          context.fillStyle = "#0095DD";
+          context.fill();
+          context.closePath();
+        }
       }
+    }
   }
+
+  detectBrickCollision () {
+    let { x, y, dy, bricks } = this.state
+
+    for (let column = 0; column < BRICK.COLUMN; column++) {
+      for (let row = 0; row < BRICK.ROW; row++) {
+        let currentBrick = bricks[column][row]
+        if (currentBrick.status === BRICK.STATUS.ACTIVATE) {
+          if (x > currentBrick.x &&
+              x < currentBrick.x + BRICK.WIDTH &&
+              y > currentBrick.y &&
+              y < currentBrick.y + BRICK.HEIGHT) {
+            dy = -dy
+            currentBrick.status = BRICK.STATUS.DEACTIVATE
+            this.setState({
+              bricks: [...this.state.bricks, currentBrick]
+            })
+          }
+        }
+      }
+    }
   }
 
   keyDownHandler (e) {
