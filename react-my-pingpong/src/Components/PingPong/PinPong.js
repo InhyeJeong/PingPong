@@ -28,6 +28,7 @@ class PingPong extends Component {
     })
     document.addEventListener("keydown", (e) => this.keyDownHandler(e), false);
     document.addEventListener("keyup", (e) => this.keyUpHandler(e), false);
+    document.addEventListener("mousemove", (e) => this.mouseMoveHandler(e), false);
     this.initBrickPosition()
   }
 
@@ -239,6 +240,16 @@ class PingPong extends Component {
     } else if (keyCode === KEY.LEFT) {
       this.setState({
         leftPressed: false,
+      })
+    }
+  }
+
+  mouseMoveHandler (e) {
+    let { canvas } = this.state
+    let relativeX = e.clientX - canvas.offsetLeft;
+    if (relativeX > 0 && relativeX < CANVAS.WIDTH) {
+      this.setState({
+        paddleX: relativeX - PADDLE.WIDTH / 2,
       })
     }
   }
