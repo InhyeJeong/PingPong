@@ -192,14 +192,14 @@ class PingPong extends Component {
               x < currentBrick.x + BRICK.WIDTH &&
               y > currentBrick.y &&
               y < currentBrick.y + BRICK.HEIGHT) {
-            dy = -dy
             currentBrick.status = BRICK.STATUS.DEACTIVATE
             this.setState({
+              dy: -dy,
               bricks: [...bricks, currentBrick],
               score: ++score,
             })
-            if (score === BRICK.ROW * BRICK.COLUMN) {
-              alert(`YOU WIN, CONGRATULATIONS! YOUR SCORE IS ${score} !!`);
+            if (this.state.score === BRICK.ROW * BRICK.COLUMN) {
+              alert(`YOU WIN, CONGRATULATIONS! YOUR SCORE IS ${this.state.score} !!`);
               document.location.reload();
               cancelAnimationFrame(animationRequest)
             }
@@ -210,11 +210,11 @@ class PingPong extends Component {
   }
 
   drawScore () {
-    let { context, score } = this.state
+    let { context } = this.state
 
     context.font = "16px Arial";
     context.fillStyle = "#0095DD";
-    context.fillText(`Score: ${score}`, 8, 20)
+    context.fillText(`Score: ${this.state.score}`, 8, 20)
   }
 
   keyDownHandler (e) {
